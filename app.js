@@ -1,48 +1,51 @@
 const express = require("express");
-const morgan = require("morgan");
-const app = express();
-const connectDB = require("./Config/db");
-const cors = require("cors");
+const mongoose = require('mongoose');
 const dotenv = require("dotenv");
-const path = require("path");
- 
-require("colors");
+const userRoute = require("./routes/user.route.js") ;
+const gigRoute = require("./routes/gig.route.js") ;
+const orderRoute = require("./routes/order.route.js");
+const conversationRoute = require("./routes/conversional.route.js") ;
+const messageRoute = require("./routes/message.route.js") ;
+const reviewRoute = require("./routes/review.route.js");
+const authRoute = require("./routes/auth.route.js") ;
+const cookieParser = require("cookie-parser")
+const cors = require("cors");
 
-app.use(cors());
-app.options("*", cors());
-
+const app = express();
 dotenv.config({
-    path: "./Config/config.env",
+    path: "./config/config.env",
+});
+mongoose.set("strictQuery", true);
+
+const connect = async () => {
+  try {
+    await mongoose.connect(process.env.CONNECTION_STRING);
+    console.log("Connected to mongoDB!");
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(express.json());
+app.use(cookieParser());
+
+app.use("/api/auth", authRoute);
+app.use("/api/users", userRoute);
+app.use("/api/gigs", gigRoute);
+app.use("/api/orders", orderRoute);
+app.use("/api/conversations", conversationRoute);
+app.use("/api/messages", messageRoute);
+app.use("/api/reviews", reviewRoute);
+
+app.use((err, req, res, next) => {
+  const errorStatus = err.status || 500;
+  const errorMessage = err.message || "Something went wrong!";
+
+  return res.status(errorStatus).send(errorMessage);
 });
 
-// Connect to mongodb Server
-connectDB();
-
-
-//middleware
-app.use(express.json())
- 
-app.use(morgan("tiny"));
-app.use('/uploads', express.static('uploads'));
-app.use(express.urlencoded({ urlencoded: true }));
-
-
-// Home page landing
-app.get('/', (req, res) => {
-    res.send('Under Construction wait');
+app.listen(4000, () => {
+  connect();
+  console.log("Backend server is running!");
 });
-
-const contactRouter = require('./Router/Contact-message');
-const clienthireformRouter = require('./Router/client_hire_form');
-const userRoutes = require('./Router/hire_user');
-app.use("/contact",contactRouter);
-app.use("/clienthireform",clienthireformRouter);
-app.use("/hire", userRoutes);
-
-//Server
-app.listen(process.env.PORT,()=>{
-    console.log("Server running at http://localhost:4000".yellow.underline.bold);
-
-});
-
-
