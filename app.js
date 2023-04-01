@@ -33,9 +33,11 @@ app.get('/', (req, res) => {
 });
 
 const contactRouter = require('./Router/Contact-message');
- 
+const clienthireformRouter = require('./Router/client_hire_form');
+const userRoutes = require('./Router/hire_user');
 app.use("/contact",contactRouter);
- 
+app.use("/clienthireform",clienthireformRouter);
+app.use("/hire", userRoutes);
 
 //Server
 app.listen(process.env.PORT,()=>{
