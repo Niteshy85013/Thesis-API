@@ -17,7 +17,7 @@ const userSchema = mongoose.Schema({
   },
   img: {
     type: String,
-    required: false,
+    
   },
   country: {
     type: String,
