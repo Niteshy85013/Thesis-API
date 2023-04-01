@@ -5,7 +5,7 @@ const connectDB = require("./Config/db");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
-const cookieParser = require("cookie-parser")
+ 
 require("colors");
 
 app.use(cors());
@@ -21,7 +21,7 @@ connectDB();
 
 //middleware
 app.use(express.json())
-app.use(cookieParser())
+ 
 app.use(morgan("tiny"));
 app.use('/uploads', express.static('uploads'));
 app.use(express.urlencoded({ urlencoded: true }));
